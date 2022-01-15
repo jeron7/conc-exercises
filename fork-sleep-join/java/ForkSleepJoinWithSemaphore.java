@@ -4,7 +4,7 @@ import java.util.concurrent.Semaphore;
 
 public class ForkSleepJoinWithSemaphore {
 
-    public static final int MAX_SECONDS = 5;
+    public static final int EXCLUSIVE_UPPER_BOUND = 6;
 
     public static void main(String[] args) throws InterruptedException {
         System.out.print("Choose a number n: ");
@@ -17,14 +17,14 @@ public class ForkSleepJoinWithSemaphore {
 
     private static void startThreadsWithSemaphore(int n, Semaphore semaphore) {
         for (int i = 0; i < n; i++) {
-            Thread current = new Thread(() -> sleepAndRelease(semaphore));
+            Thread current = new Thread(() -> sleepAndWakeUp(semaphore));
             current.start();
         }
     }
 
-    private static void sleepAndRelease(Semaphore semaphore) {
+    private static void sleepAndWakeUp(Semaphore semaphore) {
         Random random = new Random();
-        float seconds = random.nextInt(MAX_SECONDS);
+        float seconds = random.nextInt(EXCLUSIVE_UPPER_BOUND);
         String threadName = Thread.currentThread().getName();
         System.out.println(threadName + " will sleep for " + seconds);
         try {
@@ -32,7 +32,7 @@ public class ForkSleepJoinWithSemaphore {
         } catch (InterruptedException e) {
             e.printStackTrace();
         } finally {
-            System.out.println(threadName + " finished");
+            System.out.println(threadName + " wake up");
             semaphore.release();
         }
     }
