@@ -8,13 +8,16 @@ public class TwoPhasesSleeper implements Runnable {
 
     private int randomSleepDuration;
 
+    private Semaphore externalSemaphore;
+
     private Semaphore internalSemaphore;
 
-    private Semaphore externalSemaphore;
+    private Counter counter;
 
     private List<TwoPhasesSleeper> sleepers;
 
-    public TwoPhasesSleeper(Semaphore externalSemaphore, List<TwoPhasesSleeper> sleepers) {
+    public TwoPhasesSleeper(Counter counter, Semaphore externalSemaphore, List<TwoPhasesSleeper> sleepers) {
+        this.counter = counter;
         this.externalSemaphore = externalSemaphore;
         this.internalSemaphore = new Semaphore(0);
         this.sleepers = sleepers;
@@ -73,7 +76,18 @@ public class TwoPhasesSleeper implements Runnable {
     public void run() {
         firstPhase();
         secondPhase();
-        externalSemaphore.release();
+        countOne();
+    }
+
+    private void countOne() {
+        try {
+            externalSemaphore.acquire();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        } finally {
+            counter.count();
+            externalSemaphore.release();
+        }
     }
 
     @Override
