@@ -10,6 +10,9 @@ public class CountDownLatch {
 
     private Integer counter;
 
+    /**
+        A one shot barrier 
+     */
     public CountDownLatch(int permits) {
         this.barrierSemaphore = new Semaphore(0);
         this.counterSemaphore = new Semaphore(1);
