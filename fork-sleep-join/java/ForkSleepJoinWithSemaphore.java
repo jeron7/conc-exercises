@@ -1,48 +1,41 @@
+import barrier.OneShotBarrier;
+
 import java.util.Random;
 import java.util.Scanner;
-import java.util.concurrent.Semaphore;
 
 public class ForkSleepJoinWithSemaphore {
-
-    public static final int EXCLUSIVE_UPPER_BOUND = 6;
 
     public static void main(String[] args) throws InterruptedException {
         System.out.print("Choose a number n: ");
         int n = new Scanner(System.in).nextInt();
-        Counter counter = new Counter();
-        startThreadsWithSharedCounter(n, counter);
-        waitCountToN(n, counter);
+        startThreadsWithSharedCounter(n);
         System.out.println("The number choose was: " + n);
     }
 
-    private static void waitCountToN(int n, Counter counter) throws InterruptedException {
-        while(counter.getValue() < n) {
-            Thread.sleep(1);
-        }
-    }
-
-    private static void startThreadsWithSharedCounter(int n, Counter counter) {
-        Semaphore semaphore = new Semaphore(1);
+    private static void startThreadsWithSharedCounter(int n) throws InterruptedException {
+        OneShotBarrier barrier = new OneShotBarrier(n + 1);
         for (int i = 0; i < n; i++) {
-            Thread current = new Thread(() -> sleepAndWakeUp(counter, semaphore));
+            Thread current = new Thread(() -> sleepAndWakeUp(barrier));
             current.start();
         }
+        barrier.waitFor();
     }
 
-    private static void sleepAndWakeUp(Counter counter, Semaphore semaphore) {
-        Random random = new Random();
-        float seconds = random.nextInt(EXCLUSIVE_UPPER_BOUND);
+    private static void sleepAndWakeUp(OneShotBarrier barrier) {
+        int seconds = generateRandomSeconds();
         String threadName = Thread.currentThread().getName();
         System.out.println(threadName + " will sleep for " + seconds);
         try {
-            Thread.sleep((long) (seconds * 1000));
+            Thread.sleep(seconds * 1000);
             System.out.println(threadName + " wake up");
-            semaphore.acquire();
-            counter.count();
+            barrier.waitFor();
         } catch (InterruptedException e) {
             e.printStackTrace();
-        } finally {
-            semaphore.release();
         }
+    }
+
+    private static int generateRandomSeconds() {
+        Random random = new Random();
+        return random.nextInt(6);
     }
 }

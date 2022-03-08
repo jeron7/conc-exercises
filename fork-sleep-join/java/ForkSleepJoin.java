@@ -5,8 +5,6 @@ import java.util.Scanner;
 
 public class ForkSleepJoin {
 
-    public static final int EXCLUSIVE_UPPER_BOUND = 6;
-
     public static void main(String[] args) {
         System.out.print("Choose a number n: ");
         int n = new Scanner(System.in).nextInt();
@@ -36,16 +34,20 @@ public class ForkSleepJoin {
     }
 
     private static void sleepAndWakeUp() {
-        Random random = new Random();
-        float seconds = random.nextInt(EXCLUSIVE_UPPER_BOUND);
+        int seconds = generateRandomSeconds();
         String threadName = Thread.currentThread().getName();
         System.out.println(threadName + " will sleep for " + seconds);
         try {
-            Thread.sleep((long) (seconds * 1000));
+            Thread.sleep(seconds * 1000);
         } catch (InterruptedException e) {
             e.printStackTrace();
         } finally {
             System.out.println(threadName + " wake up");
         }
+    }
+
+    private static int generateRandomSeconds() {
+        Random random = new Random();
+        return random.nextInt(6);
     }
 }
