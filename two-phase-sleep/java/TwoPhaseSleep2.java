@@ -1,9 +1,10 @@
-import barrier.OneShotBarrier;
+import barrier.CyclicBarrier;
 import util.TwoPhaseSleepUtil;
 
 import java.util.*;
+import java.util.concurrent.Semaphore;
 
-public class TwoPhaseSleep {
+public class TwoPhaseSleep2 {
 
     public static void main(String[] args) throws InterruptedException {
         System.out.print("Choose a number n: ");
@@ -13,24 +14,28 @@ public class TwoPhaseSleep {
     }
 
     private static void startThreadsAndWait(int n) throws InterruptedException {
-        OneShotBarrier firstBarrier = new OneShotBarrier(n);
-        OneShotBarrier secondBarrier = new OneShotBarrier(n + 1);
+        CyclicBarrier barrier = new CyclicBarrier(n);
+        Semaphore holdMainFlow = new Semaphore(0);
         List<Integer> chosenTimers = new ArrayList<>(Collections.nCopies(n, 0));
         for (int i = 0; i < n; i++) {
             int currentIndex = i;
             Thread current = new Thread(() -> {
                 try {
                     TwoPhaseSleepUtil.firstPhase(chosenTimers, currentIndex);
-                    firstBarrier.waitFor();
+                    barrier.waitFor();
 
                     TwoPhaseSleepUtil.secondPhase(chosenTimers, currentIndex);
-                    secondBarrier.waitFor();
+                    barrier.waitFor();
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
+                // The problem for this solution is that all threads will release
+                // So semaphore that holds main flow, at the end, will be positive
+                holdMainFlow.release();
             });
             current.start();
         }
-        secondBarrier.waitFor();
+
+        holdMainFlow.acquire();
     }
 }

@@ -25,12 +25,6 @@ public class CyclicBarrier {
     }
 
     private void waitFirstBarrier() throws InterruptedException {
-        synchronized (this) {
-            System.out.println(
-                    String.format("The %s was entered in first barrier", Thread.currentThread().getName()));
-            System.out.println("Counter: "+ counter);
-        }
-
         synchronized(counter) {
             counter += 1;
             if (counter == permits) {
@@ -41,17 +35,9 @@ public class CyclicBarrier {
 
         firstBarrier.acquire();
         firstBarrier.release();
-        System.out.println(
-                String.format("The %s was exited in first barrier", Thread.currentThread().getName()));
     }
 
     private void waitSecondBarrier() throws InterruptedException {
-        synchronized (this) {
-            System.out.println(
-                    String.format("The %s was entered in second barrier", Thread.currentThread().getName()));
-            System.out.println("Counter: "+ counter);
-        }
-
         synchronized (counter) {
             counter -= 1;
             if (counter == 0) {
@@ -62,7 +48,5 @@ public class CyclicBarrier {
 
         secondBarrier.acquire();
         secondBarrier.release();
-        System.out.println(
-                String.format("The %s was exited in second barrier", Thread.currentThread().getName()));
     }
 }
