@@ -12,12 +12,13 @@ public class TwoPhaseSleepUtil {
         System.out.println(currentThread(currentIndex) + " wake up");
 
         int predecessorIndex = getPredecessorIndex(currentIndex, chosenTimers.size());
-        chosenTimers.add(predecessorIndex, generateRandomSleepDurationInSeconds());
+        int predecessorSeconds = generateRandomSleepDurationInSeconds();
+        System.out.println(currentThread(currentIndex) + " set " + predecessorSeconds + " seconds for " + currentThread(predecessorIndex) + " sleep");
+        chosenTimers.set(predecessorIndex, predecessorSeconds);
     }
 
     public static void secondPhase(List<Integer> chosenTimers, int currentIndex) {
-        int predecessorIndex = getPredecessorIndex(currentIndex, chosenTimers.size());
-        int secondsToSleep = chosenTimers.get(predecessorIndex);
+        int secondsToSleep = chosenTimers.get(currentIndex);
 
         System.out.println(currentThread(currentIndex) + " will sleep, again, for " + secondsToSleep + " seconds");
         makeThreadSleep(secondsToSleep);
@@ -26,7 +27,7 @@ public class TwoPhaseSleepUtil {
 
     private static void makeThreadSleep(int seconds) {
         try {
-            Thread.sleep(seconds * 1000);
+            Thread.sleep((long) seconds * 1000);
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
@@ -41,7 +42,7 @@ public class TwoPhaseSleepUtil {
         if (currentIndex == 0) {
             currentIndex = chosenTimersSize;
         }
-        return (int) currentIndex - 1;
+        return currentIndex - 1;
     }
 
     private static String currentThread(int currentIndex) {
