@@ -6,4 +6,6 @@ For *java*, we have two solutions:
 
 For *rust*, we have two solutions: 
 1. using fork: in fork dir.
-2. using barrier: in barrier dir. 
+2. using barrier: in barrier dir.
+
+For *go*, we have one solution that uses WaitGroup.
