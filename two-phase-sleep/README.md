@@ -8,4 +8,4 @@ All the solutions above use the file **util.TwoPhaseSleepUtil**.
 
 For *rust*, we have only one solution, that uses two Barriers. 
 
-For *go*, we have only one solution, that uses two WaitGroups and an array of channels to communicate the sleep number that will be generated to the predecessor thread. 
+For *go*, we have only one solution, that uses two WaitGroups and an array of channels to communicate the sleep number that was generated to the predecessor thread. 
