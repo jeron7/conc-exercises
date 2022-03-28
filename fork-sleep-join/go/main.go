@@ -26,15 +26,12 @@ func start_threads_and_wait(n int) {
 }
 
 func sleep_and_wake_up(id int, barrier *sync.WaitGroup) {
-	sleep_for_seconds(id)
-	barrier.Done()
-}
-
-func sleep_for_seconds(id int) {
 	sleep_time := generate_random_bounded_integer(6)
 	fmt.Printf("Thread (%d): will sleep for (%d) seconds\n", id, sleep_time)
 	time.Sleep(time.Duration(sleep_time) * time.Second)
 	fmt.Printf("Thread (%d): wake up\n", id)
+	
+	barrier.Done()
 }
 
 func generate_random_bounded_integer(bound int) int {
