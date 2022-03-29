@@ -7,10 +7,6 @@ import (
 	"time"
 )
 
-const (
-	random_upper_bound int = 6
-)
-
 func main() {
 	fmt.Printf("Choose a number: ")
 	n := read_int()
@@ -49,19 +45,19 @@ func sleep_and_wake_up(id int, f_barrier, s_barrier *sync.WaitGroup, channels []
 }
 
 func first_phase(id int, channels []chan int) {
-	sleep_time := generate_random_bounded_integer()
+	sleep_time := generate_random_bounded_integer(6)
 	fmt.Printf("Thread-%d will sleep for %d seconds.\n", id, sleep_time)
 	time.Sleep(time.Duration(sleep_time) * time.Second)
 	fmt.Printf("Thread-%d has wake up.\n", id)
 
-	pred_id := find_predecessor_id(id, len(channels))
-	pred_sleep_time := generate_random_bounded_integer()
-	channels[pred_id] <- pred_sleep_time
-	fmt.Printf("Thread-%d set %d seconds for thread-%d.\n", id, pred_sleep_time, pred_id)
+	succ_id := find_successor_id(id, len(channels))
+	succ_sleep_time := generate_random_bounded_integer(11)
+	channels[succ_id] <- succ_sleep_time
+	fmt.Printf("Thread-%d set %d seconds for thread-%d.\n", id, succ_sleep_time, succ_id)
 }
 
-func generate_random_bounded_integer() int {
-	random := rand.Intn(random_upper_bound)
+func generate_random_bounded_integer(number int) int {
+	random := rand.Intn(number)
 	return random
 }
 
@@ -73,10 +69,10 @@ func second_phase(id int, channels []chan int) {
 	fmt.Printf("Thread %d has wake up, again.\n", id)
 }
 
-func find_predecessor_id(id, n int) int {
-	pred_id := id
-	if id == 0 {
-		pred_id = n
+func find_successor_id(id, n int) int {
+	succ_id := id
+	if id == n-1 {
+		return 0
 	}
-	return pred_id - 1
+	return succ_id + 1
 }
