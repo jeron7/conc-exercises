@@ -7,10 +7,6 @@ import (
 	"time"
 )
 
-const (
-	random_upper_bound int = 6
-)
-
 func main() {
 	fmt.Printf("Choose a number: ")
 	n := read_int()
@@ -35,8 +31,8 @@ func start_threads_and_wait(n int) {
 	s_barrier.Add(n)
 
 	for i := 0; i < n; i++ {
-		pred_id := find_predecessor_id(i, n)
-		var out chan int = channels[pred_id]
+		succ_id := find_successor_id(i, n)
+		var out chan int = channels[succ_id]
 		var in chan int = channels[i]
 		id := i
 		go func() {
@@ -52,18 +48,18 @@ func start_threads_and_wait(n int) {
 }
 
 func first_phase(id int, out chan<- int) {
-	sleep_time := generate_random_bounded_integer()
+	sleep_time := generate_random_bounded_integer(6)
 	fmt.Printf("Thread-%d will sleep for %d seconds.\n", id, sleep_time)
 	time.Sleep(time.Duration(sleep_time) * time.Second)
 	fmt.Printf("Thread-%d has wake up.\n", id)
 
-	pred_sleep_time := generate_random_bounded_integer()
-	out <- pred_sleep_time
-	fmt.Printf("Thread-%d set %d seconds for his predecessor.\n", id, pred_sleep_time)
+	succ_sleep_time := generate_random_bounded_integer(11)
+	out <- succ_sleep_time
+	fmt.Printf("Thread-%d set %d seconds for his successor.\n", id, succ_sleep_time)
 }
 
-func generate_random_bounded_integer() int {
-	random := rand.Intn(random_upper_bound)
+func generate_random_bounded_integer(bound int) int {
+	random := rand.Intn(bound)
 	return random
 }
 
@@ -74,10 +70,10 @@ func second_phase(id int, in <-chan int) {
 	fmt.Printf("Thread %d has wake up, again.\n", id)
 }
 
-func find_predecessor_id(id, n int) int {
-	pred_id := id
-	if id == 0 {
-		pred_id = n
+func find_successor_id(id, n int) int {
+	succ_id := id
+	if id == n-1 {
+		return 0
 	}
-	return pred_id - 1
+	return succ_id + 1
 }
