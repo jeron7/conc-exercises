@@ -10,4 +10,4 @@ For the [test 1](https://docs.google.com/document/d/1rIDYsYBL8ruJaBVpDj3CKgVd2eV
 - *rust*: we have only one solution, that uses two Barriers. 
 
 For [test 3](https://docs.google.com/document/d/1V_gE8B719MlEBKJdCF6k9Ee-5y-jLWbFliKphyl-aj4/edit): 
-- For *go*, we have only one solution, that uses two WaitGroups and an array of channels to communicate the sleep number that was generated to the predecessor thread.
+- For *go*, we have only one solution, that uses two WaitGroups and an array of channels to communicate the sleep number that was generated to the successor thread.
